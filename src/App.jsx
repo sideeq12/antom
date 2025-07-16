@@ -9,6 +9,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [uploadedFile, setUploadedFile] = useState(null)
   const [pdfList, setPdfList] = useState([])
+  const [sidebarOpen, setSidebarOpen] = useState(false) // NEW: sidebar toggle for mobile
   const messagesEndRef = useRef(null)
   const fileInputRef = useRef(null)
 
@@ -245,8 +246,14 @@ function App() {
     <div className="flex flex-col h-screen bg-gray-900">
       <div className="flex flex-1 h-full">
         {/* Sidebar for PDF list */}
-        <aside className="w-64 bg-gray-800 border-r border-gray-700 p-4 overflow-y-auto flex-shrink-0">
-          <h2 className="text-lg font-semibold text-white mb-4">Uploaded PDFs</h2>
+        {/* Mobile sidebar overlay */}
+        <div className={`fixed inset-0 z-40 bg-black bg-opacity-40 transition-opacity md:hidden ${sidebarOpen ? 'block' : 'hidden'}`} onClick={() => setSidebarOpen(false)} />
+        <aside className={`fixed z-50 top-0 left-0 h-full w-64 bg-gray-800 border-r border-gray-700 p-4 overflow-y-auto flex-shrink-0 transform transition-transform duration-200 md:static md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:block`}> 
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-white">Uploaded PDFs</h2>
+            {/* Close button for mobile */}
+            <button className="md:hidden text-gray-400 hover:text-white text-2xl" onClick={() => setSidebarOpen(false)}>&times;</button>
+          </div>
           {/* Upload Button in Sidebar */}
           <div className="mb-4 flex items-center">
             <button
@@ -282,7 +289,13 @@ function App() {
           {/* Header */}
           <header className="bg-gray-800 border-b border-gray-700 p-4">
             <div className="max-w-4xl mx-auto flex items-center justify-between">
-              <h1 className="text-xl font-bold text-white">Antom</h1>
+              <div className="flex items-center space-x-4">
+                {/* Sidebar toggle for mobile */}
+                <button className="md:hidden text-white text-2xl mr-2" onClick={() => setSidebarOpen(true)}>
+                  <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor' className='w-7 h-7'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 6h16M4 12h16M4 18h16' /></svg>
+                </button>
+                <h1 className="text-xl font-bold text-white">Antom</h1>
+              </div>
               <div className="flex items-center space-x-4">
                 <button
                   onClick={testConnection}
@@ -290,29 +303,28 @@ function App() {
                 >
                   Test API
                 </button>
-                <span className="text-gray-300 text-sm">Dark Mode</span>
+                <span className="text-gray-300 text-sm hidden sm:inline">Dark Mode</span>
               </div>
             </div>
           </header>
 
           {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-2 sm:p-4">
             <div className="max-w-4xl mx-auto space-y-4">
               {messages.length === 0 && (
-                <div className="text-center text-gray-400 mt-20">
+                <div className="text-center text-gray-400 mt-10 sm:mt-20">
                   <div className="text-6xl mb-4">🤖</div>
-                  <h2 className="text-2xl font-semibold mb-2">Welcome to AI Assistant</h2>
+                  <h2 className="text-2xl font-semibold mb-2">Welcome to Antom</h2>
                   <p className="text-lg">Ask me anything or upload a PDF to get started!</p>
                 </div>
               )}
-              
               {messages.map((message) => (
                 <div
                   key={message.id}
                   className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg p-4 ${
+                    className={`max-w-[90%] sm:max-w-[80%] rounded-lg p-3 sm:p-4 ${
                       message.type === 'user'
                         ? 'bg-blue-600 text-white'
                         : message.type === 'error'
@@ -330,7 +342,6 @@ function App() {
                   </div>
                 </div>
               ))}
-              
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-gray-700 text-white rounded-lg p-4">
@@ -341,13 +352,12 @@ function App() {
                   </div>
                 </div>
               )}
-              
               <div ref={messagesEndRef} />
             </div>
           </div>
 
           {/* Input Area */}
-          <div className="bg-gray-800 border-t border-gray-700 p-4">
+          <div className="bg-gray-800 border-t border-gray-700 p-2 sm:p-4">
             <div className="max-w-4xl mx-auto">
               {/* Message Input and Send Button in a flex row */}
               <div className="flex items-end space-x-2">
@@ -357,16 +367,16 @@ function App() {
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Ask me anything or upload a PDF..."
-                    className="w-full p-3 pr-12 bg-gray-700 text-white rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full p-3 pr-12 bg-gray-700 text-white rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 text-base sm:text-lg"
                     rows="1"
-                    style={{ minHeight: '48px', maxHeight: '120px' }}
+                    style={{ minHeight: '44px', maxHeight: '120px' }}
                   />
                 </div>
                 <button
                   onClick={handleSendMessage}
                   disabled={(!inputMessage.trim() && !uploadedFile) || isLoading}
                   className="h-12 p-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center justify-center"
-                  style={{ minHeight: '48px' }}
+                  style={{ minHeight: '44px' }}
                 >
                   ➤
                 </button>
