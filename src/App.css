@@ -1,0 +1,43 @@
+/* Custom styles for the chat interface */
+
+/* Auto-resize textarea */
+textarea {
+  overflow-y: hidden;
+}
+
+/* Smooth transitions */
+.transition-colors {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom focus styles */
+.focus\:ring-2:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Message animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-enter {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Loading animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
